@@ -110,10 +110,9 @@ def main():
             pub_key = dict(type='str'),
             state = dict(choices=['present', 'absent'], default='present'),
             api_key = dict(aliases=['API_KEY'], no_log=True),
-            id = dict(aliases=['scalet_id'], type='int'),
         ),
         required_one_of = (
-            ['id', 'name'],
+            ['name'],
         ),
     )
     std(module)
