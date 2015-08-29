@@ -92,16 +92,22 @@ def std(module):
     for key in keylist:
         if str(key['name']) == str(name):
             nokey = False
-            if key['key'] == pub_key:
-                module.exit_json(msg="Key equals")
-            else:
+            if key['key'] == pub_key and state == 'present':
+                module.exit_json(msg="Key equals, nothing to change")
+            elif key['key'] != pub_key and state == 'present':
                 changekey(key['id'], key['name'], pub_key)
-                module.exit_json(changed=True, msg=key['name'])
+                module.exit_json(changed=True, msg="Key changed")
+            else:
+                api.sshkey_delete(key['id'])
+                module.exit_json(changed=True, msg="Key deleted")
 
 
-    if nokey:
+    if nokey and state == 'present':
         res = api.sshkey_add(name, pub_key)
         module.exit_json(changed=True, msg=res)
+    else:
+        module.exit_json(changed=True, msg="No key")
+
 
 def main():
     module = AnsibleModule(
